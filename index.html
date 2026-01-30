@@ -5,60 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA_SUDOR</title>
     <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
-        #terminal { padding: 20px; z-index: 2; background: rgba(0, 0, 0, 0.8); flex-grow: 1; overflow-y: auto; }
-        #input-line { display: flex; align-items: center; }
-        #prompt { margin-right: 10px; }
-        #command-line { background: transparent; border: none; color: #0f0; outline: none; font-family: inherit; font-size: 1.2em; width: 80%; }
-        #final-image { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 1; filter: grayscale(100%) contrast(150%); }
-        p { margin: 5px 0; }
+        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
+        #terminal { padding: 20px; height: 100%; overflow-y: auto; }
+        #command-line { background: transparent; border: none; color: #0f0; outline: none; font-size: 1.2em; width: 80%; }
+        
+        /* Estilo de la "Pestaña" de ingreso */
+        #login-box {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #111;
+            border: 2px solid #0f0;
+            padding: 30px;
+            z-index: 10;
+            box-shadow: 0 0 20px #0f0;
+            text-align: center;
+        }
+        #login-box input {
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        #final-image { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 20; filter: grayscale(100%); }
     </style>
 </head>
 <body>
     <div id="terminal">
         <div id="output"></div>
-        <div id="input-line">
-            <span id="prompt">></span>
-            <input type="text" id="command-line" autofocus autocomplete="off">
-        </div>
+        <div id="input-line">> <input type="text" id="command-line" autofocus autocomplete="off"></div>
     </div>
-    <img id="final-image" src="cara.jpg">
+
+    <div id="login-box">
+        <p>IDENTIDAD DETECTADA.<br>INGRESE PROTOCOLO DE VERDAD:</p>
+        <input type="text" id="ego-input" placeholder="¿QUÉ VAS A VENDER?">
+    </div>
+
+    <img id="final-image" src="cara.jpeg">
 
     <script>
         const output = document.getElementById('output');
-        const input = document.getElementById('command-line');
+        const cmd = document.getElementById('command-line');
+        const loginBox = document.getElementById('login-box');
+        const egoInput = document.getElementById('ego-input');
         const finalImage = document.getElementById('final-image');
-        let step = 1;
 
-        const print = (text) => {
-            const p = document.createElement('p');
-            p.innerHTML = text;
+        const print = (t) => {
+            const p = document.createElement('p'); p.innerHTML = t;
             output.appendChild(p);
-            document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
         };
 
         print("SISTEMA SUDOR V.1.0...");
-        print("CONEXIÓN ESTABLECIDA.");
-        print("----------------------------------");
         print("DECIME UNA LETRA >");
 
-        input.addEventListener('keydown', (e) => {
+        cmd.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const val = input.value.toUpperCase().trim();
+                const val = cmd.value.toUpperCase().trim();
                 print("> " + val);
-                input.value = '';
-                if (step === 1) {
-                    if (val === 'A') {
-                        print("VARIABLE ACEPTADA.");
-                        print("RESPONDA: ¿QUÉ VAS A VENDER? >");
-                        step = 2;
-                    } else { print("ERROR: ACCESO DENEGADO."); }
-                } else if (step === 2) {
-                    if (val === 'EGO' || val === 'MI EGO') {
-                        print("ACCESO CONCEDIDO.");
-                        finalImage.style.display = 'block';
-                        print("<br><br><strong>YA NO SOS DUEÑO DE TU IMAGEN.</strong>");
-                    } else { print("EL SISTEMA REQUIERE UNA VERDAD."); }
+                cmd.value = '';
+                if (val === 'A') {
+                    print("LETRA ACEPTADA. ABRIENDO COMPARTIMENTO...");
+                    setTimeout(() => { loginBox.style.display = 'block'; egoInput.focus(); }, 1000);
+                } else { print("ACCESO DENEGADO."); }
+            }
+        });
+
+        egoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = egoInput.value.toUpperCase().trim();
+                if (val === 'EGO' || val === 'MI EGO') {
+                    loginBox.style.display = 'none';
+                    finalImage.style.display = 'block';
+                    print("PROCESANDO REDIRECCIÓN...");
+                    
+                    // CAMBIA ESTA URL por el link a donde quieras mandarlos
+                    setTimeout(() => {
+                        window.location.href = "https://t.me/TuGrupoDeTelegram"; 
+                    }, 3000); 
+
+                } else {
+                    egoInput.value = '';
+                    alert("RESPUESTA INCORRECTA");
                 }
             }
         });
