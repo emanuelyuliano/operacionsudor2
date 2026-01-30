@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA_SUDOR</title>
+    <style>
+        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        #terminal { padding: 20px; z-index: 2; background: rgba(0, 0, 0, 0.9); flex-grow: 1; overflow-y: auto; }
+        #input-line { display: flex; align-items: center; }
+        #prompt { margin-right: 10px; }
+        #command-line { background: transparent; border: none; color: #0f0; outline: none; font-family: inherit; font-size: 1.2em; width: 80%; }
+        #webcam { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 1; filter: grayscale(100%) contrast(120%) brightness(60%); }
+        p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div id="output"></div>
+        <div id="input-line">
+            <span id="prompt">></span>
+            <input type="text" id="command-line" autofocus autocomplete="off">
+        </div>
+    </div>
+    <video id="webcam" autoplay playsinline></video>
+    <script>
+        const output = document.getElementById('output');
+        const input = document.getElementById('command-line');
+        const webcam = document.getElementById('webcam');
+        let step = 1;
+
+        const print = (text) => {
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            output.appendChild(p);
+            document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+        };
+
+        print("SISTEMA SUDOR V.1.0...");
+        print("CONEXIÓN ESTABLECIDA.");
+        print("----------------------------------");
+        print("DECIME UNA LETRA >");
+
+        input.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const val = input.value.toUpperCase().trim();
+                print("> " + val);
+                input.value = '';
+                if (step === 1) {
+                    if (val === 'A') {
+                        print("VARIABLE ACEPTADA.");
+                        print("IDENTIDAD RECONOCIDA.");
+                        print("RESPONDA: ¿QUÉ VAS A VENDER? >");
+                        step = 2;
+                    } else { print("ERROR: LETRA INCORRECTA."); }
+                } else if (step === 2) {
+                    if (val === 'EGO' || val === 'MI EGO') {
+                        print("ACCESO CONCEDIDO. MIRÁ LA PANTALLA.");
+                        startCamera();
+                    } else { print("EL SISTEMA REQUIERE UNA VERDAD."); }
+                }
+            }
+        });
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                webcam.srcObject = stream;
+                webcam.style.display = 'block';
+                print("<br><br>ESTO ES LO QUE ESTÁS VENDIENDO.");
+                print("YA SOS LIBRE.");
+            } catch (err) { print("ERROR: ACCESO A CÁMARA DENEGADO."); }
+        }
+    </script>
+</body>
+</html>
